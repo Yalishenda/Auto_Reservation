@@ -1,0 +1,5 @@
+/config/secrets.json
+/config/client_secret_*.json
+/config/token.json
+.venv
+/downloads

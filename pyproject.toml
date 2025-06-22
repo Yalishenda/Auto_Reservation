@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "auto-reservation"
+version = "0.1.0"
+description = ""
+authors = ["Aleksandr Zubkov <yalishenda.z@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+datetime = "^5.5"
+camelot = "^12.6.29"
+pandas = "^2.3.0"
+telebot = "^0.0.5"
+requests = "^2.32.4"
+google-auth-oauthlib = "^1.2.2"
+google-auth = "^2.40.3"
+google-auth-httplib2 = "^0.2.0"
+openai = "^1.90.0"
+notion-client = "^2.4.0"
+google-api-python-client = "^2.173.0"
+path = "^17.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

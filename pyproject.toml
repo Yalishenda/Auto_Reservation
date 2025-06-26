@@ -8,7 +8,6 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.13"
 datetime = "^5.5"
-camelot = "^12.6.29"
 pandas = "^2.3.0"
 telebot = "^0.0.5"
 requests = "^2.32.4"
@@ -19,6 +18,12 @@ openai = "^1.90.0"
 notion-client = "^2.4.0"
 google-api-python-client = "^2.173.0"
 path = "^17.1.0"
+camelot-py = {extras = ["cv"], version = "^1.0.0"}
+ghostscript = "^0.8.1"
+pillow = "^11.2.1"
+pdfplumber = "^0.11.7"
+python-bidi = "^0.6.6"
+argparse = "^1.4.0"
 
 
 [build-system]

@@ -48,8 +48,8 @@ from src.logger import log_event
 SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
 EMAIL_STATE = "unread"         # 'unread' | 'read' | 'all'
-MAX_RESULTS = 150               # Gmail fetch limit
-RESERVE_FOR_DEMO = 10          # keep newest N messages untouched (only if 'unread')
+MAX_RESULTS = 100              # Gmail fetch limit
+RESERVE_FOR_DEMO = 0          # keep newest N messages untouched (only if 'unread')
 
 DOWNLOAD_DIR = REPO_ROOT / "downloads"
 DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)

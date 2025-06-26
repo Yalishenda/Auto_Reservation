@@ -61,8 +61,8 @@ GPT cost.
 
 ```bash
 # 1. clone & install
-git clone https://github.com/your-org/reservation-automation.git
-cd reservation-automation
+git clone https://github.com/Yalishenda/Auto_Reservation.git
+cd Auto_Reservation
 poetry install
 
 # 2. copy & fill secrets

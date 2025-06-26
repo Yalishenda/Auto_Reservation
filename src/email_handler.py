@@ -39,15 +39,16 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
-from utils.paths import REPO_ROOT, SECRETS_PATH
-from notion_handler import search_notion_by_reservation_number
+from src.utils.paths import REPO_ROOT, SECRETS_PATH
+from src.notion_handler import search_notion_by_reservation_number
+from src.logger import log_event
 
 # ───────────────────────────────  CONFIG  ──────────────────────────────── #
 
 SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
 EMAIL_STATE = "unread"         # 'unread' | 'read' | 'all'
-MAX_RESULTS = 20               # Gmail fetch limit
+MAX_RESULTS = 150               # Gmail fetch limit
 RESERVE_FOR_DEMO = 10          # keep newest N messages untouched (only if 'unread')
 
 DOWNLOAD_DIR = REPO_ROOT / "downloads"
@@ -166,42 +167,44 @@ def fetch_new_emails(
 
         # ----- handle attachments -----------------------------------------
         for part in msg["payload"].get("parts", []):
-            filename = part.get("filename")
-            if not (filename and filename.lower().endswith(".pdf")):
+            orig_name = part.get("filename")
+            if not (orig_name and orig_name.lower().endswith(".pdf")):
                 continue
-            if filename in existing_files:
-                print(f"Skip (already on disk): {filename}")
+
+            # Normalised file name:  RES_<res#>_<edition>.pdf
+            new_name = f"RES_{res_num}_{edition_int}.pdf"
+            if new_name in existing_files:
+                print(f"Skip (already on disk): {new_name}")
                 continue
 
             att_id = part["body"].get("attachmentId")
             if not att_id:
                 continue
 
-            att = (
-                service.users()
-                .messages()
-                .attachments()
-                .get(userId="me", messageId=msg_id, id=att_id)
-                .execute()
-            )
-            data = base64.urlsafe_b64decode(att["data"].encode("UTF-8"))
-            file_path = DOWNLOAD_DIR / filename
-            file_path.write_bytes(data)
+            att = service.users().messages().attachments().get(
+                userId="me", messageId=msg_id, id=att_id
+            ).execute()
+            file_bytes = base64.urlsafe_b64decode(att["data"].encode("UTF-8"))
 
-            print(f"Downloaded {file_path}  |  res={res_num}  ver={edition_int}")
+            file_path = DOWNLOAD_DIR / new_name
+            file_path.write_bytes(file_bytes)
 
-            downloaded.append(
-                {
-                    "file_path": str(file_path),
-                    "reservation_number": res_num,
-                    "edition": edition_int,
-                    "gmail_msg_id": msg_id,
-                    "sender": sender_email,
-                    "email_date": headers.get("Date", ""),
-                }
-            )
+            log_event(module="email_handler",
+                      event="pdf_downloaded",
+                      reservation_number=res_num,
+                      edition=edition_int,
+                      filename=new_name)
 
-            existing_files.add(filename)  # prevent duplicate same-email PDF
+            downloaded.append({
+                "file_path": str(file_path),
+                "reservation_number": res_num,
+                "edition": edition_int,
+                "gmail_msg_id": msg_id,
+                "sender": sender_email,
+                "email_date": headers.get("Date", ""),
+            })
+
+            existing_files.add(new_name)  # avoid duplicates
 
         # ----- mark read if we were looking at unread ----------------------
         if email_state == "unread":
@@ -211,10 +214,3 @@ def fetch_new_emails(
 
     return downloaded
 
-"""
-# ───────────────────────────  CLI TEST  ──────────────────────────────────── #
-
-if __name__ == "__main__":
-    rows = fetch_new_emails()
-    print("\nSummary:", rows)
-"""

@@ -24,20 +24,35 @@ GPT cost.
 ## 🗂️ Project Layout
 
 ├── src/
+
 │ ├── main.py
+
 │ ├── email_handler.py
+
 │ ├── pdf_reader.py
+
 │ ├── text_analyzer.py
+
 │ ├── notion_handler.py
+
 │ ├── notifier.py
+
 │ └── logger.py
+
 ├── utils/paths.py
+
 ├── downloads/ # temp PDFs
+
 ├── logs/
+
 │ └── 2025-06-reservations.csv
+
 └── config/
+
 ├── secrets.example.json
+
 └── gmail_client_secret.json
+
 
 
 ---
@@ -61,3 +76,28 @@ poetry run python -m src.email_handler --help     # opens browser consent
 
 # 4. run pipeline
 poetry run python -m src.main --state unread
+
+🔧 CLI Options (main.py)
+Flag	Default	Purpose
+`--state unread	read	all`
+--max N	20	Max PDFs/e-mails to process
+--from-downloads	off	Ignore Gmail, process PDFs already in downloads/
+--digest-only	off	Skip processing; just send daily digest
+
+🤖 OpenAI Cost
+≈ 1.5k tokens / PDF → $0.001 (GPT-4o-mini June-2025 pricing)
+
+Early edition guard avoids needless calls → < $1 / 1 000 PDFs / year
+
+
+🤝 Contributing
+Fork → feature branch → PR.
+
+Follow black 24-line length.
+
+Include log lines for new modules (logger.log_event).
+
+Keep secrets out of commits!
+
+📄 License
+MIT © 2025 Aleksandr Zubkov / Bar-Ilan University School of High-Tech & Cybersecurity / Data-Science Class DS18
